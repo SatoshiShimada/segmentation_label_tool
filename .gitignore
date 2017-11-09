@@ -1,0 +1,8 @@
+*.o
+*.pro
+*.app
+*.png
+moc_*
+.DS_store
+Makefile
+label_tool
