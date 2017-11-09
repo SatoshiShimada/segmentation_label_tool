@@ -81,3 +81,10 @@ void PaintArea::setPixImage(const unsigned char *data)
 	this->update();
 }
 
+void PaintArea::setImage(QImage image)
+{
+	*mainPixmap = QPixmap::fromImage(image);
+	this->setPixmap(*mainPixmap);
+	this->update();
+}
+

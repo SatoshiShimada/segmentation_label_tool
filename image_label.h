@@ -17,6 +17,7 @@ class PaintArea : public QLabel
 
 public:
 	PaintArea(int, int);
+	void setImage(QImage);
 protected:
 	QPixmap *mainPixmap;
 	void mousePressEvent(QMouseEvent *event);

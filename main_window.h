@@ -19,6 +19,7 @@
 #include <QFileDialog>
 
 #include "image_label.h"
+#include "slic.h"
 
 class Window : public QMainWindow
 {
@@ -32,11 +33,13 @@ protected:
 	QLineEdit *fileNameEdit;
 	QHBoxLayout *mainLayout;
 	QVBoxLayout *formLayout;
+	Slic *slic;
 public:
 	Window();
 	~Window();
 private slots:
 	void apply(void);
+	void searchWhiteLine(int, int);
 };
 
 #endif //__INTERFACE_H__

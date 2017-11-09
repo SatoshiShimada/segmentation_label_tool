@@ -13,6 +13,7 @@
 
 Window::Window() : QMainWindow()
 {
+	slic = new Slic;
 	setAcceptDrops(true);
 	createWindow();
 	connectSignal();
@@ -29,8 +30,8 @@ void Window::createWindow(void)
 	paintarea = new PaintArea(width, height);
 	mainLayout = new QHBoxLayout;
 	formLayout = new QVBoxLayout;
-	applyButton = new QPushButton("Apply");
-	fileNameEdit = new QLineEdit;
+	applyButton = new QPushButton("Super pixel");
+	fileNameEdit = new QLineEdit("image.png");
 
 	paintarea->setAlignment(Qt::AlignTop | Qt::AlignLeft);
 
@@ -46,11 +47,21 @@ void Window::createWindow(void)
 void Window::connectSignal(void)
 {
 	connect(applyButton, SIGNAL(clicked()), this, SLOT(apply()));
+	connect(paintarea, SIGNAL(mousePressSignal(int, int)), this, SLOT(searchWhiteLine(int, int)));
 }
 
 void Window::apply(void)
 {
-	paintarea->loadPixmapImage("image.png");
+	QString filename = fileNameEdit->text();
+	slic->loadImage(filename.toStdString().c_str());
+	slic->process(256, 2.0);
+	QImage result = slic->getVisualizeImage();
+	paintarea->setImage(result);
 	this->update();
+}
+
+void Window::searchWhiteLine(int x, int y)
+{
+	slic->searchWhiteLine(x, y);
 }
 
