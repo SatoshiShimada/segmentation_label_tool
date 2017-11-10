@@ -14,8 +14,9 @@ public:
 	~Slic();
 	void loadImage(const char *);
 	void process(const int, const double);
-	void searchWhiteLine(const int, const int);
+	QImage searchWhiteLine(const int, const int);
 	QImage getVisualizeImage(void);
+	QImage drawWhiteLine(void);
 protected:
 	cv::Mat input_img;
 	cv::Mat gaussian_img;
@@ -23,6 +24,7 @@ protected:
 	cv::Mat visualize_img;
 	std::vector<struct cluster_center> centers;
 	std::vector<int> label_vec;
+	std::vector<int> whitelines_label;
 	int width;
 	int height;
 	unsigned int getLabelVecIndex(const int, const int);

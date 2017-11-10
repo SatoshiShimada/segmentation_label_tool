@@ -147,7 +147,7 @@ void Slic::process(const int cluster_num, const double threshold)
 		std::vector<std::vector<struct cluster_center> > labels(centers.size());
 		for(int y = 0; y < height; y++) {
 			for(int x = 0; x < width; x++) {
-				int l = label_vec[getLabelVecIndex(x, y)];
+				const int l = label_vec[getLabelVecIndex(x, y)];
 				if(l == -1) continue;
 				struct cluster_center c;
 				c.l = lab_img.at<cv::Vec3b>(y, x)[0];
@@ -191,9 +191,31 @@ void Slic::process(const int cluster_num, const double threshold)
 	}
 }
 
-void Slic::searchWhiteLine(const int x, const int y)
+QImage Slic::searchWhiteLine(const int x, const int y)
 {
 	const int label = label_vec[getLabelVecIndex(x, y)];
+	whitelines_label.push_back(label);
+	return drawWhiteLine();
+}
+
+QImage Slic::drawWhiteLine(void)
+{
+	cv::Mat img = input_img.clone();
+	cv::Vec3b red(0, 0, 255);
+	for(auto label : whitelines_label) {
+		for(int y = 0; y < height; y++) {
+			for(int x = 0; x < width; x++) {
+				int l = label_vec[getLabelVecIndex(x, y)];
+				if(l == label) {
+					img.at<cv::Vec3b>(y, x) = red;
+				}
+			}
+		}
+	}
+	cvtColor(img, img, CV_BGR2RGB);
+	QImage tmp_img((unsigned char *)img.data, width, height, img.step, QImage::Format_RGB888);
+	QImage result = tmp_img.copy();
+	return result;
 }
 
 QImage Slic::getVisualizeImage(void)

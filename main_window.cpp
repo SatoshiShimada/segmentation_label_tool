@@ -31,12 +31,16 @@ void Window::createWindow(void)
 	mainLayout = new QHBoxLayout;
 	formLayout = new QVBoxLayout;
 	applyButton = new QPushButton("Super pixel");
+	exportButton = new QPushButton("Export");
 	fileNameEdit = new QLineEdit("image.png");
+	clusterNumEdit = new QLineEdit("256");
 
 	paintarea->setAlignment(Qt::AlignTop | Qt::AlignLeft);
 
 	formLayout->addWidget(fileNameEdit);
+	formLayout->addWidget(clusterNumEdit);
 	formLayout->addWidget(applyButton);
+	formLayout->addWidget(exportButton);
 	mainLayout->addLayout(formLayout);
 	mainLayout->addWidget(paintarea);
 
@@ -54,7 +58,8 @@ void Window::apply(void)
 {
 	QString filename = fileNameEdit->text();
 	slic->loadImage(filename.toStdString().c_str());
-	slic->process(256, 2.0);
+	const int cluster_num = clusterNumEdit->text().toInt();
+	slic->process(cluster_num, 2.0);
 	QImage result = slic->getVisualizeImage();
 	paintarea->setImage(result);
 	this->update();
@@ -62,6 +67,8 @@ void Window::apply(void)
 
 void Window::searchWhiteLine(int x, int y)
 {
-	slic->searchWhiteLine(x, y);
+	QImage result = slic->searchWhiteLine(x, y);
+	paintarea->setImage(result);
+	this->update();
 }
 

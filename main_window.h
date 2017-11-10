@@ -30,7 +30,9 @@ protected:
 	QWidget *window;
 	PaintArea *paintarea;
 	QPushButton *applyButton;
+	QPushButton *exportButton;
 	QLineEdit *fileNameEdit;
+	QLineEdit *clusterNumEdit;
 	QHBoxLayout *mainLayout;
 	QVBoxLayout *formLayout;
 	Slic *slic;
