@@ -1,5 +1,4 @@
 
-#include <iostream>
 #include <cmath>
 #include "slic.h"
 
@@ -76,6 +75,7 @@ Slic::~Slic()
 
 void Slic::loadImage(const char *filename)
 {
+	input_filename = std::string(filename);
 	input_img = cv::imread(filename);
 	width = input_img.cols;
 	height = input_img.rows;
@@ -83,6 +83,11 @@ void Slic::loadImage(const char *filename)
 	cv::GaussianBlur(input_img, gaussian_img, cv::Size(3, 3), 0);
 	lab_img = input_img.clone();
 	cv::cvtColor(gaussian_img, lab_img, CV_BGR2Lab);
+	label_mat = cv::Mat::zeros(height, width, CV_8UC1);
+	label_img = input_img.clone();
+	centers.clear();
+	label_vec.clear();
+	whitelines_label.clear();
 }
 
 void Slic::process(const int cluster_num, const double threshold)
@@ -191,21 +196,20 @@ void Slic::process(const int cluster_num, const double threshold)
 	}
 }
 
-QImage Slic::searchWhiteLine(const int x, const int y)
+void Slic::searchWhiteLine(const int x, const int y)
 {
 	const int label = label_vec[getLabelVecIndex(x, y)];
 	whitelines_label.push_back(label);
-	return drawWhiteLine();
 }
 
 QImage Slic::drawWhiteLine(void)
 {
-	cv::Mat img = input_img.clone();
+	cv::Mat img = label_img.clone();
 	cv::Vec3b red(0, 0, 255);
 	for(auto label : whitelines_label) {
 		for(int y = 0; y < height; y++) {
 			for(int x = 0; x < width; x++) {
-				int l = label_vec[getLabelVecIndex(x, y)];
+				const int l = label_vec[getLabelVecIndex(x, y)];
 				if(l == label) {
 					img.at<cv::Vec3b>(y, x) = red;
 				}
@@ -237,5 +241,42 @@ QImage Slic::getVisualizeImage(void)
 inline unsigned int Slic::getLabelVecIndex(const int x, const int y)
 {
 	return (y * width + x);
+}
+
+void Slic::undoSelectLabel(void)
+{
+	if(!whitelines_label.empty())
+		whitelines_label.pop_back();
+}
+
+void Slic::exportLabelData(const char *filename)
+{
+	drawLabelImage();
+	std::ofstream ofs;
+	ofs.open(filename, std::ios::out);
+	ofs << input_filename << std::endl;
+	for(int y = 0; y < height; y++) {
+		for(int x = 0; x < width; x++) {
+			const unsigned char data = label_mat.at<unsigned char>(y, x);
+			if(data != 0)
+				ofs << x << " " << y << std::endl;
+		}
+	}
+}
+
+void Slic::drawLabelImage(void)
+{
+	cv::Vec3b red(0, 0, 255);
+	for(auto label : whitelines_label) {
+		for(int y = 0; y < height; y++) {
+			for(int x = 0; x < width; x++) {
+				int l = label_vec[getLabelVecIndex(x, y)];
+				if(l == label) {
+					label_mat.at<unsigned char>(y, x) = 1;
+					label_img.at<cv::Vec3b>(y, x) = red;
+				}
+			}
+		}
+	}
 }
 
