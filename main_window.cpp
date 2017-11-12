@@ -13,7 +13,7 @@
 
 Window::Window() : QMainWindow()
 {
-	slic = new Slic;
+	sp = new SuperPixel;
 	setAcceptDrops(true);
 	createWindow();
 	connectSignal();
@@ -82,10 +82,10 @@ void Window::connectSignal(void)
 void Window::loadImage(void)
 {
 	QString filename = fileNameEdit->text();
-	slic->loadImage(filename.toStdString().c_str());
+	sp->loadImage(filename.toStdString().c_str());
 	const int cluster_num = clusterNumEdit->text().toInt();
-	slic->process(cluster_num, 2.0);
-	QImage result = slic->getVisualizeImage();
+	sp->process(cluster_num, 2.0);
+	QImage result = sp->getVisualizeImage();
 	paintarea->setImage(result);
 	this->update();
 }
@@ -93,24 +93,24 @@ void Window::loadImage(void)
 void Window::apply(void)
 {
 	const int cluster_num = clusterNumEdit->text().toInt();
-	slic->process(cluster_num, 2.0);
-	QImage result = slic->getVisualizeImage();
+	sp->process(cluster_num, 2.0);
+	QImage result = sp->getVisualizeImage();
 	paintarea->setImage(result);
 	this->update();
 }
 
 void Window::undo(void)
 {
-	slic->undoSelectLabel();
-	QImage result = slic->drawWhiteLine();
+	sp->undoSelectLabel();
+	QImage result = sp->drawWhiteLine();
 	paintarea->setImage(result);
 	this->update();
 }
 
 void Window::searchWhiteLine(int x, int y)
 {
-	slic->searchWhiteLine(x, y);
-	QImage result = slic->drawWhiteLine();
+	sp->searchWhiteLine(x, y);
+	QImage result = sp->drawWhiteLine();
 	paintarea->setImage(result);
 	this->update();
 }
@@ -119,6 +119,6 @@ void Window::exportLabel(void)
 {
 	QString filename = fileNameEdit->text();
 	filename.replace(QString("png"), QString("txt"));
-	slic->exportLabelData(filename.toStdString().c_str());
+	sp->exportLabelData(filename.toStdString().c_str());
 }
 

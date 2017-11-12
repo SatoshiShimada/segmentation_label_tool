@@ -1,6 +1,6 @@
 
-#ifndef __INTERFACE_H__
-#define __INTERFACE_H__
+#ifndef __MAIN_WINDOW_H__
+#define __MAIN_WINDOW_H__
 
 #include <iostream>
 #include <vector>
@@ -19,7 +19,7 @@
 #include <QFileDialog>
 
 #include "image_label.h"
-#include "slic.h"
+#include "superpixel.h"
 
 class Window : public QMainWindow
 {
@@ -45,7 +45,7 @@ protected:
 	QVBoxLayout *formLayout;
 	QGroupBox *zoomButtonGroup;
 	QHBoxLayout *zoomButtonLayout;
-	Slic *slic;
+	SuperPixel *sp;
 public:
 	Window();
 	~Window();
@@ -57,5 +57,5 @@ private slots:
 	void exportLabel(void);
 };
 
-#endif //__INTERFACE_H__
+#endif //__MAIN_WINDOW_H__
 

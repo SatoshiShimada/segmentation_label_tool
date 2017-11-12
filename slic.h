@@ -2,41 +2,36 @@
 #ifndef __SLIC_H__
 #define __SLIC_H__
 
-#include <iostream>
-#include <fstream>
-#include <string>
 #include <vector>
+
 #include <cv.h>
 #include <highgui.h>
-#include <QImage>
+
+struct cluster_center
+{
+	int l;
+	int a;
+	int b;
+	int x;
+	int y;
+	cluster_center() : l(0), a(0), b(0), x(0), y(0)
+	{
+	}
+};
 
 class Slic
 {
 public:
-	Slic(void);
+	Slic();
 	~Slic();
-	void loadImage(const char *);
-	void process(const int, const double);
-	void searchWhiteLine(const int, const int);
-	QImage getVisualizeImage(void);
-	QImage drawWhiteLine(void);
-	void undoSelectLabel(void);
-	void exportLabelData(const char *);
-	void drawLabelImage(void);
+	void operator()(const cv::Mat, const int, const double, std::vector<int> &, std::vector<struct cluster_center> &);
 protected:
-	cv::Mat input_img;
-	cv::Mat gaussian_img;
-	cv::Mat lab_img;
-	cv::Mat visualize_img;
-	cv::Mat label_mat;
-	cv::Mat label_img;
+	void process(const cv::Mat, const int, const double, std::vector<int> &, std::vector<struct cluster_center> &);
+	int getLabelVecIndex(const int, const int);
 	std::vector<struct cluster_center> centers;
 	std::vector<int> label_vec;
-	std::vector<int> whitelines_label;
-	std::string input_filename;
 	int width;
 	int height;
-	unsigned int getLabelVecIndex(const int, const int);
 };
 
 #endif // __SLIC_H__

@@ -8,8 +8,8 @@ DEPENDPATH += .
 INCLUDEPATH += .
 
 # Input
-HEADERS += image_label.h main_window.h slic.h
-SOURCES += image_label.cpp main.cpp main_window.cpp slic.cpp
+HEADERS += image_label.h main_window.h superpixel.h slic.h
+SOURCES += image_label.cpp main.cpp main_window.cpp superpixel.cpp slic.cpp
 
 QMAKE_CFLAGS += -std=c++11 `pkg-config --cflags opencv`
 QMAKE_CXXFLAGS += -std=c++11 `pkg-config --cflags opencv`
