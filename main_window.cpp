@@ -17,6 +17,7 @@ Window::Window() : QMainWindow()
 	setAcceptDrops(true);
 	createWindow();
 	connectSignal();
+	zoomImageIndex = 0;
 }
 
 Window::~Window()
@@ -39,6 +40,7 @@ void Window::createWindow(void)
 	rawImageButton = new QRadioButton("Raw");
 	superpixelImageButton = new QRadioButton("Super pixel");
 	zoomButtonGroup = new QGroupBox("Zoom");
+	zoomCheckBox = new QCheckBox("Zoom");
 	leftButton = new QPushButton("<");
 	rightButton = new QPushButton(">");
 	upButton = new QPushButton("^");
@@ -58,6 +60,7 @@ void Window::createWindow(void)
 	formLayout->addWidget(loadButton);
 	formLayout->addWidget(applyButton);
 	formLayout->addWidget(undoButton);
+	formLayout->addWidget(zoomCheckBox);
 	formLayout->addWidget(zoomButtonGroup);
 	formLayout->addWidget(exportButton);
 	formLayout->addWidget(rawImageButton);
@@ -77,6 +80,11 @@ void Window::connectSignal(void)
 	connect(paintarea, SIGNAL(mouseMoveSignal(int, int)), this, SLOT(searchWhiteLine(int, int)));
 	connect(undoButton, SIGNAL(clicked()), this, SLOT(undo()));
 	connect(exportButton, SIGNAL(clicked()), this, SLOT(exportLabel()));
+	connect(zoomCheckBox, SIGNAL(stateChanged(int)), this, SLOT(zoomImage(int)));
+	connect(upButton, SIGNAL(clicked()), this, SLOT(upZoomClicked()));
+	connect(downButton, SIGNAL(clicked()), this, SLOT(downZoomClicked()));
+	connect(leftButton, SIGNAL(clicked()), this, SLOT(leftZoomClicked()));
+	connect(rightButton, SIGNAL(clicked()), this, SLOT(rightZoomClicked()));
 }
 
 void Window::loadImage(void)
@@ -120,5 +128,48 @@ void Window::exportLabel(void)
 	QString filename = fileNameEdit->text();
 	filename.replace(QString("png"), QString("txt"));
 	sp->exportLabelData(filename.toStdString().c_str());
+}
+
+void Window::zoomImage(int state)
+{
+	if(state == Qt::Checked) {
+		sp->zoomImage(zoomImageIndex);
+		updateZoomImage();
+	}
+}
+
+void Window::upZoomClicked(void)
+{
+	if(zoomImageIndex - 3 >= 0)
+		zoomImageIndex -= 3;
+	updateZoomImage();
+}
+
+void Window::downZoomClicked(void)
+{
+	if(zoomImageIndex + 3 <= 8)
+		zoomImageIndex += 3;
+	updateZoomImage();
+}
+
+void Window::leftZoomClicked(void)
+{
+	if(zoomImageIndex - 1 >= 0)
+		zoomImageIndex--;
+	updateZoomImage();
+}
+
+void Window::rightZoomClicked(void)
+{
+	if(zoomImageIndex + 1 <= 8)
+		zoomImageIndex++;
+	updateZoomImage();
+}
+
+void Window::updateZoomImage(void)
+{
+	QImage result = sp->getZoomImage(zoomImageIndex);
+	paintarea->setImage(result);
+	this->update();
 }
 
