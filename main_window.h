@@ -41,7 +41,7 @@ protected:
 	QRadioButton *rawImageButton;
 	QRadioButton *superpixelImageButton;
 	QLineEdit *fileNameEdit;
-	QLineEdit *clusterNumEdit;
+	QSpinBox *clusterNumSpin;
 	QHBoxLayout *mainLayout;
 	QVBoxLayout *formLayout;
 	QGroupBox *zoomButtonGroup;
@@ -63,6 +63,7 @@ private slots:
 	void downZoomClicked(void);
 	void leftZoomClicked(void);
 	void rightZoomClicked(void);
+	void clusterNumChanged(int);
 };
 
 #endif //__MAIN_WINDOW_H__

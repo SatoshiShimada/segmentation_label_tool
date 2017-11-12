@@ -36,7 +36,7 @@ void Window::createWindow(void)
 	exportButton = new QPushButton("Export");
 	undoButton = new QPushButton("Undo");
 	fileNameEdit = new QLineEdit("image.png");
-	clusterNumEdit = new QLineEdit("256");
+	clusterNumSpin = new QSpinBox;
 	rawImageButton = new QRadioButton("Raw");
 	superpixelImageButton = new QRadioButton("Super pixel");
 	zoomButtonGroup = new QGroupBox("Zoom");
@@ -47,6 +47,10 @@ void Window::createWindow(void)
 	downButton = new QPushButton("v");
 	zoomButtonLayout = new QHBoxLayout;
 
+	clusterNumSpin->setMinimum(1);
+	clusterNumSpin->setMaximum(10000);
+	clusterNumSpin->setValue(256);
+
 	zoomButtonLayout->addWidget(leftButton);
 	zoomButtonLayout->addWidget(rightButton);
 	zoomButtonLayout->addWidget(upButton);
@@ -56,7 +60,7 @@ void Window::createWindow(void)
 	paintarea->setAlignment(Qt::AlignTop | Qt::AlignLeft);
 
 	formLayout->addWidget(fileNameEdit);
-	formLayout->addWidget(clusterNumEdit);
+	formLayout->addWidget(clusterNumSpin);
 	formLayout->addWidget(loadButton);
 	formLayout->addWidget(applyButton);
 	formLayout->addWidget(undoButton);
@@ -85,14 +89,14 @@ void Window::connectSignal(void)
 	connect(downButton, SIGNAL(clicked()), this, SLOT(downZoomClicked()));
 	connect(leftButton, SIGNAL(clicked()), this, SLOT(leftZoomClicked()));
 	connect(rightButton, SIGNAL(clicked()), this, SLOT(rightZoomClicked()));
+	connect(clusterNumSpin, SIGNAL(valueChanged(int)), this, SLOT(clusterNumChanged(int)));
 }
 
 void Window::loadImage(void)
 {
 	QString filename = fileNameEdit->text();
 	sp->loadImage(filename.toStdString().c_str());
-	const int cluster_num = clusterNumEdit->text().toInt();
-	sp->process(cluster_num, 2.0);
+	sp->process(2.0);
 	QImage result = sp->getVisualizeImage();
 	paintarea->setImage(result);
 	this->update();
@@ -100,8 +104,7 @@ void Window::loadImage(void)
 
 void Window::apply(void)
 {
-	const int cluster_num = clusterNumEdit->text().toInt();
-	sp->process(cluster_num, 2.0);
+	sp->process(2.0);
 	QImage result = sp->getVisualizeImage();
 	paintarea->setImage(result);
 	this->update();
@@ -133,43 +136,56 @@ void Window::exportLabel(void)
 void Window::zoomImage(int state)
 {
 	if(state == Qt::Checked) {
-		sp->zoomImage(zoomImageIndex);
+		if(zoomImageIndex == 0)
+			zoomImageIndex = 1;
+		sp->setIndex(zoomImageIndex);
+		sp->zoomImage();
+		updateZoomImage();
+	} else {
+		zoomImageIndex = 0;
+		sp->setIndex(zoomImageIndex);
 		updateZoomImage();
 	}
 }
 
 void Window::upZoomClicked(void)
 {
-	if(zoomImageIndex - 3 >= 0)
+	if(zoomImageIndex - 3 >= 1)
 		zoomImageIndex -= 3;
 	updateZoomImage();
 }
 
 void Window::downZoomClicked(void)
 {
-	if(zoomImageIndex + 3 <= 8)
+	if(zoomImageIndex + 3 <= 9)
 		zoomImageIndex += 3;
 	updateZoomImage();
 }
 
 void Window::leftZoomClicked(void)
 {
-	if(zoomImageIndex - 1 >= 0)
+	if(zoomImageIndex - 1 >= 1)
 		zoomImageIndex--;
 	updateZoomImage();
 }
 
 void Window::rightZoomClicked(void)
 {
-	if(zoomImageIndex + 1 <= 8)
+	if(zoomImageIndex + 1 <= 9)
 		zoomImageIndex++;
 	updateZoomImage();
 }
 
 void Window::updateZoomImage(void)
 {
-	QImage result = sp->getZoomImage(zoomImageIndex);
+	sp->setIndex(zoomImageIndex);
+	QImage result = sp->getZoomImage();
 	paintarea->setImage(result);
 	this->update();
+}
+
+void Window::clusterNumChanged(int cluster_num)
+{
+	sp->setClusterNum(cluster_num);
 }
 

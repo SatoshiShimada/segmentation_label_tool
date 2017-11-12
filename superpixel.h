@@ -14,14 +14,14 @@
 
 #include "slic.h"
 
-struct zoomImageData {
+struct imageData {
 	cv::Mat img;
 	cv::Mat vimg;
 	int cluster_num;
 	std::vector<struct cluster_center> centers;
 	std::vector<int> label_vec;
 	bool valid;
-	zoomImageData() : valid(false)
+	imageData() : valid(false)
 	{
 	}
 };
@@ -32,29 +32,30 @@ public:
 	SuperPixel(void);
 	~SuperPixel();
 	void loadImage(const char *);
-	void process(const int, const double);
+	void process(const double);
 	void searchWhiteLine(const int, const int);
 	QImage getVisualizeImage(void);
-	QImage getZoomImage(const int);
+	QImage getZoomImage();
 	QImage drawWhiteLine(void);
 	void undoSelectLabel(void);
 	void exportLabelData(const char *);
 	void drawLabelImage(void);
-	void zoomImage(const int);
+	void zoomImage(void);
+	void setClusterNum(const int);
+	void setIndex(const int);
 protected:
 	cv::Mat input_img;
-	cv::Mat gaussian_img;
-	cv::Mat lab_img;
 	cv::Mat visualize_img;
 	cv::Mat label_mat;
 	cv::Mat label_img;
-	std::vector<struct cluster_center> centers;
-	std::vector<int> label_vec;
-	std::vector<int> whitelines_label;
-	std::vector<struct zoomImageData> zoom_image_vec;
+	std::vector<int> selected_labels;
+	std::vector<int> image_label;
+	std::vector<struct imageData> image_vec;
 	std::string input_filename;
 	int width;
 	int height;
+	int current_index;
+	int cluster_num;
 	int *zoom_image_index_x_start;
 	int *zoom_image_index_x_end;
 	int *zoom_image_index_y_start;
