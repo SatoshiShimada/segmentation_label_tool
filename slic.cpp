@@ -103,6 +103,7 @@ void Slic::process(const cv::Mat img, const int cluster_num, const double thresh
 	std::vector<double> distance_vec(pixel_num, std::numeric_limits<double>::infinity());
 
 	double error = std::numeric_limits<double>::max();
+	double prev_error = 0;
 	do {
 		/* assignment */
 		int label = 0;
@@ -161,6 +162,9 @@ void Slic::process(const cv::Mat img, const int cluster_num, const double thresh
 			centers[i] = c;
 		}
 		if(e != 0.0) error = e;
+		if(abs(error - prev_error) < 1)
+			break;
+		prev_error = error;
 	} while(error > threshold);
 
 	/* post processing */
