@@ -113,15 +113,15 @@ void Window::apply(void)
 void Window::undo(void)
 {
 	sp->undoSelectLabel();
-	QImage result = sp->drawWhiteLine();
+	QImage result = sp->getVisualizeImage();
 	paintarea->setImage(result);
 	this->update();
 }
 
 void Window::searchWhiteLine(int x, int y)
 {
-	sp->searchWhiteLine(x, y);
-	QImage result = sp->drawWhiteLine();
+	sp->selectLabel(x, y);
+	QImage result = sp->getVisualizeImage();
 	paintarea->setImage(result);
 	this->update();
 }
@@ -139,7 +139,6 @@ void Window::zoomImage(int state)
 		if(zoomImageIndex == 0)
 			zoomImageIndex = 1;
 		sp->setIndex(zoomImageIndex);
-		sp->zoomImage();
 		updateZoomImage();
 	} else {
 		zoomImageIndex = 0;
@@ -179,7 +178,7 @@ void Window::rightZoomClicked(void)
 void Window::updateZoomImage(void)
 {
 	sp->setIndex(zoomImageIndex);
-	QImage result = sp->getZoomImage();
+	QImage result = sp->getVisualizeImage();
 	paintarea->setImage(result);
 	this->update();
 }

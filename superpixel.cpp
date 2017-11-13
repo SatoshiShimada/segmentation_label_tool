@@ -13,15 +13,13 @@ SuperPixel::~SuperPixel()
 
 void SuperPixel::loadImage(const char *filename)
 {
-	for(auto l : image_vec) {
-		l.valid = false;
+	for(int i = 0; i < image_vec.size(); i++) {
+		image_vec[i].valid = false;
 	}
 	input_filename = std::string(filename);
 	input_img = cv::imread(filename);
 	width = input_img.cols;
 	height = input_img.rows;
-	label_mat = cv::Mat::zeros(height, width, CV_8UC1);
-	label_img = input_img.clone();
 	selected_labels.clear();
 	zoom_image_index_x_start = new int[9]{
 		0, width / 4, width / 2, 0, width / 4, width / 2, 0, width / 4, width / 2
@@ -37,7 +35,9 @@ void SuperPixel::loadImage(const char *filename)
 	};
 	current_index = 0;
 	cluster_num = 256;
-	image_label.resize(width * height);
+	for(int i = 0; i < width * height; i++) {
+		image_label.push_back(0);
+	}
 }
 
 void SuperPixel::process(const double threshold)
@@ -48,22 +48,40 @@ void SuperPixel::process(const double threshold)
 	cv::Mat lab_img = input_img.clone();
 	cv::cvtColor(gaussian_img, lab_img, CV_BGR2Lab);
 	image_vec[0].img = lab_img.clone();
+	cv::cvtColor(input_img, image_vec[0].vimg, CV_BGR2RGB);
 	Slic slic;
 	slic(lab_img, cluster_num, threshold, image_vec[0].label_vec, image_vec[0].centers);
 	image_vec[0].cluster_num = cluster_num;
 	image_vec[0].valid = true;
 }
 
-void SuperPixel::searchWhiteLine(const int x, const int y)
+void SuperPixel::selectLabel(const int x, const int y)
 {
 	const int label = image_vec[current_index].label_vec[getLabelVecIndex(x, y)];
 	selected_labels.push_back(label);
 }
 
-QImage SuperPixel::drawWhiteLine(void)
+QImage SuperPixel::getVisualizeImage(void)
 {
-	cv::Mat img = image_vec[current_index].img.clone();
-	cv::Vec3b red(0, 0, 255);
+	const int index = current_index;
+	if(!image_vec[index].valid) {
+		zoomImage();
+	} else if(image_vec[index].cluster_num != cluster_num) {
+		zoomImage();
+	}
+	cv::Vec3b red(255, 0, 0);
+	struct imageData &d = image_vec[index];
+	cv::Mat vimg = d.vimg.clone();
+	for(auto l : selected_labels) {
+		for(int y = 0; y < height; y++) {
+			for(int x = 0; x < width; x++) {
+				const int label = d.label_vec[getLabelVecIndex(x, y)];
+				if(label == l) {
+					vimg.at<cv::Vec3b>(y, x) = red;
+				}
+			}
+		}
+	}
 	int xstart = 0;
 	int ystart = 0;
 	int ratio = 1;
@@ -72,60 +90,18 @@ QImage SuperPixel::drawWhiteLine(void)
 		ystart = zoom_image_index_y_start[current_index - 1];
 		ratio = 2;
 	}
-	for(auto label : selected_labels) {
-		for(int y = 0; y < height; y++) {
-			for(int x = 0; x < width; x++) {
-				const int l = image_vec[current_index].label_vec[getLabelVecIndex(x, y)];
-				const int xx = xstart + x / ratio;
-				const int yy = ystart + y / ratio;
-				if(l == label) {
-					img.at<cv::Vec3b>(y, x) = red;
-				} else if(image_label[getLabelVecIndex(xx, yy)]) {
-					img.at<cv::Vec3b>(y, x) = red;
-				}
+	for(int y = 0; y < height; y++) {
+		for(int x = 0; x < width; x++) {
+			const int xx = xstart + x / ratio;
+			const int yy = ystart + y / ratio;
+			if(image_label[getLabelVecIndex(xx, yy)] != 0) {
+				vimg.at<cv::Vec3b>(y, x) = red;
 			}
 		}
 	}
-	cvtColor(img, img, CV_Lab2RGB);
-	QImage tmp_img((unsigned char *)img.data, width, height, img.step, QImage::Format_RGB888);
+	QImage tmp_img((unsigned char *)vimg.data, width, height, d.vimg.step, QImage::Format_RGB888);
 	QImage result = tmp_img.copy();
 	return result;
-}
-
-QImage SuperPixel::getVisualizeImage(void)
-{
-	visualize_img = input_img.clone();
-	visualizeImage(visualize_img, image_vec[current_index].label_vec, image_vec[current_index].centers);
-	cv::cvtColor(visualize_img, visualize_img, CV_Lab2RGB);
-	QImage tmp_img((unsigned char *)visualize_img.data, width, height, visualize_img.step, QImage::Format_RGB888);
-	QImage result = tmp_img.copy();
-	return result;
-}
-
-QImage SuperPixel::getZoomImage(void)
-{
-	const int index = current_index;
-	if(!image_vec[index].valid) {
-		zoomImage();
-	}
-	struct imageData &d = image_vec[index];
-	d.vimg = d.img.clone();
-	visualizeImage(d.vimg, d.label_vec, d.centers);
-	cv::cvtColor(d.vimg, d.vimg, CV_Lab2RGB);
-	QImage tmp_img((unsigned char *)d.vimg.data, width, height, d.vimg.step, QImage::Format_RGB888);
-	QImage result = tmp_img.copy();
-	return result;
-}
-
-void SuperPixel::visualizeImage(cv::Mat &out_img, const std::vector<int> in_label_vec, const std::vector<struct cluster_center> in_centers)
-{
-	for(int y = 1; y < height - 1; y++) {
-		for(int x = 1; x < width - 1; x++) {
-			const int label = in_label_vec[getLabelVecIndex(x, y)];
-			cv::Vec3b v(in_centers[label].l, in_centers[label].a, in_centers[label].b);
-			out_img.at<cv::Vec3b>(y, x) = v;
-		}
-	}
 }
 
 inline unsigned int SuperPixel::getLabelVecIndex(const int x, const int y)
@@ -141,32 +117,14 @@ void SuperPixel::undoSelectLabel(void)
 
 void SuperPixel::exportLabelData(const char *filename)
 {
-	drawLabelImage();
+	saveSelectLabel();
 	std::ofstream ofs;
 	ofs.open(filename, std::ios::out);
 	ofs << input_filename << std::endl;
 	for(int y = 0; y < height; y++) {
 		for(int x = 0; x < width; x++) {
-			const unsigned char data = label_mat.at<unsigned char>(y, x);
-			if(data != 0)
+			if(image_label[getLabelVecIndex(x, y)] != 0)
 				ofs << x << " " << y << std::endl;
-		}
-	}
-}
-
-void SuperPixel::drawLabelImage(void)
-{
-	cv::Vec3b red(0, 0, 255);
-	for(auto label : selected_labels) {
-		for(int y = 0; y < height; y++) {
-			for(int x = 0; x < width; x++) {
-				int l = image_vec[current_index].label_vec[getLabelVecIndex(x, y)];
-				if(l == label) {
-					label_mat.at<unsigned char>(y, x) = 1;
-					label_img.at<cv::Vec3b>(y, x) = red;
-					//label_img[getLabelVecIndex(x, y)] = 1;
-				}
-			}
 		}
 	}
 }
@@ -178,6 +136,7 @@ void SuperPixel::zoomImage()
 		if(image_vec[index].cluster_num != cluster_num) {
 			Slic slic;
 			slic(image_vec[index].img, cluster_num, 10, image_vec[index].label_vec, image_vec[index].centers);
+			cv::cvtColor(image_vec[index].img, image_vec[index].vimg, CV_Lab2RGB);
 		}
 	} else {
 		if(index < 1) {
@@ -196,6 +155,7 @@ void SuperPixel::zoomImage()
 			}
 		}
 		cv::resize(i, z, z.size(), 0, 0);
+		cv::cvtColor(z, image_vec[index].vimg, CV_Lab2RGB);
 		Slic slic;
 		slic(z, cluster_num, 10, image_vec[index].label_vec, image_vec[index].centers);
 		image_vec[index].valid = true;
@@ -210,28 +170,33 @@ void SuperPixel::setClusterNum(const int in_cluster_num)
 void SuperPixel::setIndex(const int index)
 {
 	if(index != current_index) {
-		int xstart = 0;
-		int ystart = 0;
-		int ratio = 1;
-		if(current_index != 0) {
-			xstart = zoom_image_index_x_start[current_index - 1];
-			ystart = zoom_image_index_y_start[current_index - 1];
-			ratio = 2;
-		}
-		for(auto label : selected_labels) {
-			for(int y = 0; y < height; y++) {
-				for(int x = 0; x < width; x++) {
-					int l = image_vec[current_index].label_vec[getLabelVecIndex(x, y)];
-					if(l == label) {
-						const int xx = xstart + x / ratio;
-						const int yy = ystart + y / ratio;
-						image_label[getLabelVecIndex(xx, yy)] = 1;
-					}
+		saveSelectLabel();
+		selected_labels.clear();
+		current_index = index;
+	}
+}
+
+void SuperPixel::saveSelectLabel(void)
+{
+	int xstart = 0;
+	int ystart = 0;
+	int ratio = 1;
+	if(current_index != 0) {
+		xstart = zoom_image_index_x_start[current_index - 1];
+		ystart = zoom_image_index_y_start[current_index - 1];
+		ratio = 2;
+	}
+	for(auto label : selected_labels) {
+		for(int y = 0; y < height; y++) {
+			for(int x = 0; x < width; x++) {
+				int l = image_vec[current_index].label_vec[getLabelVecIndex(x, y)];
+				if(l == label) {
+					const int xx = xstart + x / ratio;
+					const int yy = ystart + y / ratio;
+					image_label[getLabelVecIndex(xx, yy)] = 1;
 				}
 			}
 		}
-		selected_labels.clear();
-		current_index = index;
 	}
 }
 
