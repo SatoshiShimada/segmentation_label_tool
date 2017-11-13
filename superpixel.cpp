@@ -20,7 +20,6 @@ void SuperPixel::loadImage(const char *filename)
 	input_img = cv::imread(filename);
 	width = input_img.cols;
 	height = input_img.rows;
-	selected_labels.clear();
 	zoom_image_index_x_start = new int[9]{
 		0, width / 4, width / 2, 0, width / 4, width / 2, 0, width / 4, width / 2
 	};
@@ -35,9 +34,11 @@ void SuperPixel::loadImage(const char *filename)
 	};
 	current_index = 0;
 	cluster_num = 256;
+	image_label.clear();
 	for(int i = 0; i < width * height; i++) {
 		image_label.push_back(0);
 	}
+	selected_labels.clear();
 }
 
 void SuperPixel::process(const double threshold)
