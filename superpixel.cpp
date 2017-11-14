@@ -13,7 +13,7 @@ SuperPixel::~SuperPixel()
 
 void SuperPixel::loadImage(const char *filename)
 {
-	for(int i = 0; i < image_vec.size(); i++) {
+	for(std::size_t i = 0; i < image_vec.size(); i++) {
 		image_vec[i].valid = false;
 	}
 	input_filename = std::string(filename);
