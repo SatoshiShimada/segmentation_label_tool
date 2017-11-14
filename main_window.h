@@ -31,6 +31,7 @@ protected:
 	QWidget *window;
 	PaintArea *paintarea;
 	QPushButton *loadButton;
+	QPushButton *openButton;
 	QPushButton *applyButton;
 	QPushButton *exportButton;
 	QPushButton *undoButton;
@@ -47,8 +48,12 @@ protected:
 	QGroupBox *zoomButtonGroup;
 	QCheckBox *zoomCheckBox;
 	QHBoxLayout *zoomButtonLayout;
+	QComboBox *chooseFileComboBox;
 	SuperPixel *sp;
 	int zoomImageIndex;
+	int listFileIndex;
+	QString listFileName;
+	std::vector<std::string> listFile;
 public:
 	Window();
 	~Window();
@@ -64,6 +69,9 @@ private slots:
 	void leftZoomClicked(void);
 	void rightZoomClicked(void);
 	void clusterNumChanged(int);
+	void loadListFileSlot(void);
+	void nextFileSlot(void);
+	void fileIndexChanged(int);
 };
 
 #endif //__MAIN_WINDOW_H__

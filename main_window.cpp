@@ -31,7 +31,9 @@ void Window::createWindow(void)
 	paintarea = new PaintArea(width, height);
 	mainLayout = new QHBoxLayout;
 	formLayout = new QVBoxLayout;
+	chooseFileComboBox = new QComboBox;
 	loadButton = new QPushButton("Load");
+	openButton = new QPushButton("Open");
 	applyButton = new QPushButton("Super pixel");
 	exportButton = new QPushButton("Export");
 	undoButton = new QPushButton("Undo");
@@ -60,8 +62,10 @@ void Window::createWindow(void)
 	paintarea->setAlignment(Qt::AlignTop | Qt::AlignLeft);
 
 	formLayout->addWidget(fileNameEdit);
+	formLayout->addWidget(chooseFileComboBox);
 	formLayout->addWidget(clusterNumSpin);
 	formLayout->addWidget(loadButton);
+	formLayout->addWidget(openButton);
 	formLayout->addWidget(applyButton);
 	formLayout->addWidget(undoButton);
 	formLayout->addWidget(zoomCheckBox);
@@ -90,6 +94,8 @@ void Window::connectSignal(void)
 	connect(leftButton, SIGNAL(clicked()), this, SLOT(leftZoomClicked()));
 	connect(rightButton, SIGNAL(clicked()), this, SLOT(rightZoomClicked()));
 	connect(clusterNumSpin, SIGNAL(valueChanged(int)), this, SLOT(clusterNumChanged(int)));
+	connect(openButton, SIGNAL(clicked()), this, SLOT(loadListFileSlot()));
+	connect(chooseFileComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(fileIndexChanged(int)));
 }
 
 void Window::loadImage(void)
@@ -186,5 +192,44 @@ void Window::updateZoomImage(void)
 void Window::clusterNumChanged(int cluster_num)
 {
 	sp->setClusterNum(cluster_num);
+}
+
+void Window::loadListFileSlot(void)
+{
+	listFileName = QFileDialog::getOpenFileName(this, "Open Image list", "./");
+	std::ifstream listFileStream(listFileName.toStdString().c_str());
+	std::string line;
+	listFile.clear();
+	while(std::getline(listFileStream, line)) {
+		listFile.push_back(line);
+		chooseFileComboBox->addItem(QString::fromStdString(line));
+	}
+	if(listFile.size() != 0) {
+		fileNameEdit->setText(QString(listFile[0].c_str()));
+		loadImage();
+	}
+	listFileIndex = 0;
+}
+
+void Window::nextFileSlot(void)
+{
+	listFileIndex++;
+	if(listFileIndex >= listFile.size())
+		listFileIndex = std::max<int>(listFile.size() - 1, 0);
+	fileNameEdit->setText(QString(listFile[listFileIndex].c_str()));
+	loadImage();
+	chooseFileComboBox->setCurrentIndex(listFileIndex);
+}
+
+void Window::fileIndexChanged(int index)
+{
+	if(listFileIndex != index) {
+		listFileIndex = index;
+		if(listFileIndex >= listFile.size())
+			listFileIndex = std::max<int>(listFile.size() - 1, 0);
+		chooseFileComboBox->setCurrentIndex(listFileIndex);
+		fileNameEdit->setText(QString(listFile[listFileIndex].c_str()));
+		loadImage();
+	}
 }
 
