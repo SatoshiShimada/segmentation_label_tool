@@ -43,6 +43,8 @@ void SuperPixel::loadImage(const char *filename)
 
 void SuperPixel::process(const double threshold)
 {
+	saveSelectLabel();
+	selected_labels.clear();
 	image_vec[0].label_vec.clear();
 	cv::Mat gaussian_img = input_img.clone();
 	cv::GaussianBlur(input_img, gaussian_img, cv::Size(3, 3), 0);
