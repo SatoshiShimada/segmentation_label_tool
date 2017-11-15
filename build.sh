@@ -7,14 +7,13 @@ if [ $(which qmake-qt4) ]; then
 else
 	QMAKE="qmake"
 fi
-echo ${QMAKE}
 
 ${QMAKE} -project -o ${PROJECT_FILE}
 
 cat << FIN >> ${PROJECT_FILE}
-QMAKE_CFLAGS += -std=c++11 `pkg-config --cflags opencv`
-QMAKE_CXXFLAGS += -std=c++11 `pkg-config --cflags opencv`
-LIBS += `pkg-config --libs opencv`
+QMAKE_CFLAGS += -std=c++11 \`pkg-config --cflags opencv\`
+QMAKE_CXXFLAGS += -std=c++11 \`pkg-config --cflags opencv\`
+LIBS += \`pkg-config --libs opencv\`
 FIN
 
 ${QMAKE}
