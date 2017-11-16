@@ -223,8 +223,8 @@ void Window::nextFileSlot(void)
 
 void Window::fileIndexChanged(int index)
 {
-	if(listFileIndex != index) {
-		listFileIndex = index;
+	if(listFileIndex != (unsigned int)index) {
+		listFileIndex = (unsigned int)index;
 		if(listFileIndex >= listFile.size())
 			listFileIndex = std::max<int>(listFile.size() - 1, 0);
 		chooseFileComboBox->setCurrentIndex(listFileIndex);

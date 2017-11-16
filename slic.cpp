@@ -162,7 +162,7 @@ void Slic::process(const cv::Mat img, const int cluster_num, const double thresh
 			centers[i] = c;
 		}
 		if(e != 0.0) error = e;
-		if(abs(error - prev_error) < 1)
+		if(std::abs(error - prev_error) < 1)
 			break;
 		prev_error = error;
 	} while(error > threshold);

@@ -7,6 +7,7 @@
 #include <QtGui>
 #include <QtCore>
 #include <QApplication>
+#include <QRadioButton>
 #include <QPushButton>
 #include <QLabel>
 #include <QLineEdit>
@@ -17,6 +18,11 @@
 #include <QMimeData>
 #include <QString>
 #include <QFileDialog>
+#include <QSpinBox>
+#include <QGroupBox>
+#include <QSpinBox>
+#include <QCheckBox>
+#include <QComboBox>
 
 #include "image_label.h"
 #include "superpixel.h"
@@ -50,8 +56,8 @@ protected:
 	QHBoxLayout *zoomButtonLayout;
 	QComboBox *chooseFileComboBox;
 	SuperPixel *sp;
-	int zoomImageIndex;
-	int listFileIndex;
+	unsigned int zoomImageIndex;
+	unsigned int listFileIndex;
 	QString listFileName;
 	std::vector<std::string> listFile;
 public:

@@ -14,6 +14,8 @@ cat << FIN >> ${PROJECT_FILE}
 QMAKE_CFLAGS += -std=c++11 \`pkg-config --cflags opencv\`
 QMAKE_CXXFLAGS += -std=c++11 \`pkg-config --cflags opencv\`
 LIBS += \`pkg-config --libs opencv\`
+QT += core gui network
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 FIN
 
 ${QMAKE}
