@@ -4,6 +4,7 @@
 
 SuperPixel::SuperPixel(void)
 {
+	cluster_num = 256;
 	image_vec.resize(10);
 }
 
@@ -33,7 +34,6 @@ void SuperPixel::loadImage(const char *filename)
 		height / 2, height / 2, height / 2, height - height /4, height - height / 4, height - height / 4, height, height, height
 	};
 	current_index = 0;
-	cluster_num = 256;
 	image_label.clear();
 	for(int i = 0; i < width * height; i++) {
 		image_label.push_back(0);
