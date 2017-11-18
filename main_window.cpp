@@ -48,7 +48,7 @@ void Window::createWindow(void)
 	rightButton = new QPushButton(">");
 	upButton = new QPushButton("^");
 	downButton = new QPushButton("v");
-	zoomButtonLayout = new QHBoxLayout;
+	zoomButtonLayout = new QGridLayout;
 	fileNameLayout = new QHBoxLayout;
 	clusterNumLayout = new QHBoxLayout;
 
@@ -62,10 +62,10 @@ void Window::createWindow(void)
 	clusterNumLayout->addWidget(clusterNumSpin);
 	clusterNumLayout->addWidget(applyButton);
 
-	zoomButtonLayout->addWidget(leftButton);
-	zoomButtonLayout->addWidget(rightButton);
-	zoomButtonLayout->addWidget(upButton);
-	zoomButtonLayout->addWidget(downButton);
+	zoomButtonLayout->addWidget(leftButton, 2, 1);
+	zoomButtonLayout->addWidget(rightButton, 2, 3);
+	zoomButtonLayout->addWidget(upButton, 1, 2);
+	zoomButtonLayout->addWidget(downButton, 3, 2);
 	zoomButtonGroup->setLayout(zoomButtonLayout);
 
 	paintarea->setAlignment(Qt::AlignTop | Qt::AlignLeft);

@@ -54,7 +54,7 @@ protected:
 	QVBoxLayout *formLayout;
 	QGroupBox *zoomButtonGroup;
 	QCheckBox *zoomCheckBox;
-	QHBoxLayout *zoomButtonLayout;
+	QGridLayout *zoomButtonLayout;
 	QHBoxLayout *clusterNumLayout;
 	QHBoxLayout *fileNameLayout;
 	QComboBox *chooseFileComboBox;
