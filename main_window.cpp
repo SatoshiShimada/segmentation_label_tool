@@ -38,7 +38,7 @@ void Window::createWindow(void)
 	applyButton = new QPushButton("Super pixel");
 	exportButton = new QPushButton("Export");
 	undoButton = new QPushButton("Undo");
-	fileNameEdit = new QLineEdit("image.png");
+	fileNameEdit = new QLineEdit("image file name");
 	clusterNumSpin = new QSpinBox;
 	rawImageButton = new QRadioButton("Raw");
 	superpixelImageButton = new QRadioButton("Super pixel");
@@ -52,6 +52,7 @@ void Window::createWindow(void)
 	fileNameLayout = new QHBoxLayout;
 	clusterNumLayout = new QHBoxLayout;
 
+	rawImageButton->setChecked(true);
 	clusterNumSpin->setMinimum(1);
 	clusterNumSpin->setMaximum(10000);
 	clusterNumSpin->setValue(256);
@@ -109,9 +110,11 @@ void Window::connectSignal(void)
 
 void Window::loadImage(void)
 {
+	clusterNumSpin->setValue(256);
 	QString filename = fileNameEdit->text();
 	sp->loadImage(filename.toStdString().c_str());
-	sp->process(2.0);
+	const double threshold = 2.0;
+	sp->process(threshold);
 	QImage result = sp->getVisualizeImage();
 	paintarea->setImage(result);
 	this->update();
@@ -119,7 +122,8 @@ void Window::loadImage(void)
 
 void Window::apply(void)
 {
-	sp->process(2.0);
+	const double threshold = 2.0;
+	sp->process(threshold);
 	QImage result = sp->getVisualizeImage();
 	paintarea->setImage(result);
 	this->update();
