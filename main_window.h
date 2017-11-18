@@ -45,6 +45,7 @@ protected:
 	QPushButton *rightButton;
 	QPushButton *upButton;
 	QPushButton *downButton;
+	QPushButton *nextImageButton;
 	QRadioButton *rawImageButton;
 	QRadioButton *superpixelImageButton;
 	QLineEdit *fileNameEdit;
@@ -54,6 +55,8 @@ protected:
 	QGroupBox *zoomButtonGroup;
 	QCheckBox *zoomCheckBox;
 	QHBoxLayout *zoomButtonLayout;
+	QHBoxLayout *clusterNumLayout;
+	QHBoxLayout *fileNameLayout;
 	QComboBox *chooseFileComboBox;
 	SuperPixel *sp;
 	unsigned int zoomImageIndex;

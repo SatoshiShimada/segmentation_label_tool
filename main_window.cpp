@@ -34,6 +34,7 @@ void Window::createWindow(void)
 	chooseFileComboBox = new QComboBox;
 	loadButton = new QPushButton("Load");
 	openButton = new QPushButton("Open");
+	nextImageButton = new QPushButton("Next image");
 	applyButton = new QPushButton("Super pixel");
 	exportButton = new QPushButton("Export");
 	undoButton = new QPushButton("Undo");
@@ -48,10 +49,18 @@ void Window::createWindow(void)
 	upButton = new QPushButton("^");
 	downButton = new QPushButton("v");
 	zoomButtonLayout = new QHBoxLayout;
+	fileNameLayout = new QHBoxLayout;
+	clusterNumLayout = new QHBoxLayout;
 
 	clusterNumSpin->setMinimum(1);
 	clusterNumSpin->setMaximum(10000);
 	clusterNumSpin->setValue(256);
+
+	fileNameLayout->addWidget(fileNameEdit);
+	fileNameLayout->addWidget(loadButton);
+
+	clusterNumLayout->addWidget(clusterNumSpin);
+	clusterNumLayout->addWidget(applyButton);
 
 	zoomButtonLayout->addWidget(leftButton);
 	zoomButtonLayout->addWidget(rightButton);
@@ -61,12 +70,11 @@ void Window::createWindow(void)
 
 	paintarea->setAlignment(Qt::AlignTop | Qt::AlignLeft);
 
-	formLayout->addWidget(fileNameEdit);
+	formLayout->addLayout(fileNameLayout);
 	formLayout->addWidget(chooseFileComboBox);
-	formLayout->addWidget(clusterNumSpin);
-	formLayout->addWidget(loadButton);
 	formLayout->addWidget(openButton);
-	formLayout->addWidget(applyButton);
+	formLayout->addWidget(nextImageButton);
+	formLayout->addLayout(clusterNumLayout);
 	formLayout->addWidget(undoButton);
 	formLayout->addWidget(zoomCheckBox);
 	formLayout->addWidget(zoomButtonGroup);
@@ -96,6 +104,7 @@ void Window::connectSignal(void)
 	connect(clusterNumSpin, SIGNAL(valueChanged(int)), this, SLOT(clusterNumChanged(int)));
 	connect(openButton, SIGNAL(clicked()), this, SLOT(loadListFileSlot()));
 	connect(chooseFileComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(fileIndexChanged(int)));
+	connect(nextImageButton, SIGNAL(clicked()), this, SLOT(nextFileSlot()));
 }
 
 void Window::loadImage(void)
