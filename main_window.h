@@ -53,7 +53,6 @@ protected:
 	QHBoxLayout *mainLayout;
 	QVBoxLayout *formLayout;
 	QGroupBox *zoomButtonGroup;
-	QCheckBox *zoomCheckBox;
 	QGridLayout *zoomButtonLayout;
 	QHBoxLayout *clusterNumLayout;
 	QHBoxLayout *fileNameLayout;
@@ -72,7 +71,7 @@ private slots:
 	void searchWhiteLine(int, int);
 	void undo(void);
 	void exportLabel(void);
-	void zoomImage(int);
+	void zoomImage(bool);
 	void upZoomClicked(void);
 	void downZoomClicked(void);
 	void leftZoomClicked(void);

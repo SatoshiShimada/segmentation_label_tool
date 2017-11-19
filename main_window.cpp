@@ -26,16 +26,16 @@ Window::~Window()
 
 void Window::createWindow(void)
 {
-	int width = 640, height = 480;
+	const int width = 640, height = 480;
 	window = new QWidget;
 	paintarea = new PaintArea(width, height);
 	mainLayout = new QHBoxLayout;
 	formLayout = new QVBoxLayout;
 	chooseFileComboBox = new QComboBox;
 	loadButton = new QPushButton("Load");
-	openButton = new QPushButton("Open");
+	openButton = new QPushButton("Load image list");
 	nextImageButton = new QPushButton("Next image");
-	applyButton = new QPushButton("Super pixel");
+	applyButton = new QPushButton("Apply");
 	exportButton = new QPushButton("Export");
 	undoButton = new QPushButton("Undo");
 	fileNameEdit = new QLineEdit("image file name");
@@ -43,7 +43,6 @@ void Window::createWindow(void)
 	rawImageButton = new QRadioButton("Raw");
 	superpixelImageButton = new QRadioButton("Super pixel");
 	zoomButtonGroup = new QGroupBox("Zoom");
-	zoomCheckBox = new QCheckBox("Zoom");
 	leftButton = new QPushButton("<");
 	rightButton = new QPushButton(">");
 	upButton = new QPushButton("^");
@@ -53,6 +52,10 @@ void Window::createWindow(void)
 	clusterNumLayout = new QHBoxLayout;
 
 	rawImageButton->setChecked(true);
+
+	zoomButtonGroup->setCheckable(true);
+	zoomButtonGroup->setChecked(false);
+
 	clusterNumSpin->setMinimum(1);
 	clusterNumSpin->setMaximum(10000);
 	clusterNumSpin->setValue(256);
@@ -72,12 +75,11 @@ void Window::createWindow(void)
 	paintarea->setAlignment(Qt::AlignTop | Qt::AlignLeft);
 
 	formLayout->addLayout(fileNameLayout);
-	formLayout->addWidget(chooseFileComboBox);
 	formLayout->addWidget(openButton);
+	formLayout->addWidget(chooseFileComboBox);
 	formLayout->addWidget(nextImageButton);
 	formLayout->addLayout(clusterNumLayout);
 	formLayout->addWidget(undoButton);
-	formLayout->addWidget(zoomCheckBox);
 	formLayout->addWidget(zoomButtonGroup);
 	formLayout->addWidget(exportButton);
 	formLayout->addWidget(rawImageButton);
@@ -97,7 +99,7 @@ void Window::connectSignal(void)
 	connect(paintarea, SIGNAL(mouseMoveSignal(int, int)), this, SLOT(searchWhiteLine(int, int)));
 	connect(undoButton, SIGNAL(clicked()), this, SLOT(undo()));
 	connect(exportButton, SIGNAL(clicked()), this, SLOT(exportLabel()));
-	connect(zoomCheckBox, SIGNAL(stateChanged(int)), this, SLOT(zoomImage(int)));
+	connect(zoomButtonGroup, SIGNAL(toggled(bool)), this, SLOT(zoomImage(bool)));
 	connect(upButton, SIGNAL(clicked()), this, SLOT(upZoomClicked()));
 	connect(downButton, SIGNAL(clicked()), this, SLOT(downZoomClicked()));
 	connect(leftButton, SIGNAL(clicked()), this, SLOT(leftZoomClicked()));
@@ -110,6 +112,7 @@ void Window::connectSignal(void)
 
 void Window::loadImage(void)
 {
+	zoomButtonGroup->setChecked(false);
 	clusterNumSpin->setValue(256);
 	QString filename = fileNameEdit->text();
 	sp->loadImage(filename.toStdString().c_str());
@@ -152,9 +155,9 @@ void Window::exportLabel(void)
 	sp->exportLabelData(filename.toStdString().c_str());
 }
 
-void Window::zoomImage(int state)
+void Window::zoomImage(bool on)
 {
-	if(state == Qt::Checked) {
+	if(on) {
 		if(zoomImageIndex == 0)
 			zoomImageIndex = 1;
 		sp->setIndex(zoomImageIndex);
@@ -168,28 +171,28 @@ void Window::zoomImage(int state)
 
 void Window::upZoomClicked(void)
 {
-	if(zoomImageIndex - 3 >= 1)
+	if((signed)zoomImageIndex - 3 >= 1)
 		zoomImageIndex -= 3;
 	updateZoomImage();
 }
 
 void Window::downZoomClicked(void)
 {
-	if(zoomImageIndex + 3 <= 9)
+	if((signed)zoomImageIndex + 3 <= 9)
 		zoomImageIndex += 3;
 	updateZoomImage();
 }
 
 void Window::leftZoomClicked(void)
 {
-	if(zoomImageIndex - 1 >= 1)
+	if((signed)zoomImageIndex - 1 >= 1)
 		zoomImageIndex--;
 	updateZoomImage();
 }
 
 void Window::rightZoomClicked(void)
 {
-	if(zoomImageIndex + 1 <= 9)
+	if((signed)zoomImageIndex + 1 <= 9)
 		zoomImageIndex++;
 	updateZoomImage();
 }
