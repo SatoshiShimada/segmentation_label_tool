@@ -40,8 +40,7 @@ void Window::createWindow(void)
 	undoButton = new QPushButton("Undo");
 	fileNameEdit = new QLineEdit("image file name");
 	clusterNumSpin = new QSpinBox;
-	rawImageButton = new QRadioButton("Raw");
-	superpixelImageButton = new QRadioButton("Super pixel");
+	visibleBorderLineCheckBox = new QCheckBox("Visible border line");
 	zoomButtonGroup = new QGroupBox("Zoom");
 	leftButton = new QPushButton("<");
 	rightButton = new QPushButton(">");
@@ -51,7 +50,7 @@ void Window::createWindow(void)
 	fileNameLayout = new QHBoxLayout;
 	clusterNumLayout = new QHBoxLayout;
 
-	rawImageButton->setChecked(true);
+	visibleBorderLineCheckBox->setChecked(true);
 
 	zoomButtonGroup->setCheckable(true);
 	zoomButtonGroup->setChecked(false);
@@ -82,8 +81,7 @@ void Window::createWindow(void)
 	formLayout->addWidget(undoButton);
 	formLayout->addWidget(zoomButtonGroup);
 	formLayout->addWidget(exportButton);
-	formLayout->addWidget(rawImageButton);
-	formLayout->addWidget(superpixelImageButton);
+	formLayout->addWidget(visibleBorderLineCheckBox);
 	mainLayout->addLayout(formLayout);
 	mainLayout->addWidget(paintarea);
 
@@ -108,6 +106,7 @@ void Window::connectSignal(void)
 	connect(openButton, SIGNAL(clicked()), this, SLOT(loadListFileSlot()));
 	connect(chooseFileComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(fileIndexChanged(int)));
 	connect(nextImageButton, SIGNAL(clicked()), this, SLOT(nextFileSlot()));
+	connect(visibleBorderLineCheckBox, SIGNAL(toggled(bool)), this, SLOT(setVisibleBorderLine(bool)));
 }
 
 void Window::loadImage(void)
@@ -118,34 +117,26 @@ void Window::loadImage(void)
 	sp->loadImage(filename.toStdString().c_str());
 	const double threshold = 2.0;
 	sp->process(threshold);
-	QImage result = sp->getVisualizeImage();
-	paintarea->setImage(result);
-	this->update();
+	updateImage();
 }
 
 void Window::apply(void)
 {
 	const double threshold = 2.0;
 	sp->process(threshold);
-	QImage result = sp->getVisualizeImage();
-	paintarea->setImage(result);
-	this->update();
+	updateImage();
 }
 
 void Window::undo(void)
 {
 	sp->undoSelectLabel();
-	QImage result = sp->getVisualizeImage();
-	paintarea->setImage(result);
-	this->update();
+	updateImage();
 }
 
 void Window::searchWhiteLine(int x, int y)
 {
 	sp->selectLabel(x, y);
-	QImage result = sp->getVisualizeImage();
-	paintarea->setImage(result);
-	this->update();
+	updateImage();
 }
 
 void Window::exportLabel(void)
@@ -161,11 +152,11 @@ void Window::zoomImage(bool on)
 		if(zoomImageIndex == 0)
 			zoomImageIndex = 1;
 		sp->setIndex(zoomImageIndex);
-		updateZoomImage();
+		updateImage();
 	} else {
 		zoomImageIndex = 0;
 		sp->setIndex(zoomImageIndex);
-		updateZoomImage();
+		updateImage();
 	}
 }
 
@@ -173,33 +164,36 @@ void Window::upZoomClicked(void)
 {
 	if((signed)zoomImageIndex - 3 >= 1)
 		zoomImageIndex -= 3;
-	updateZoomImage();
+	sp->setIndex(zoomImageIndex);
+	updateImage();
 }
 
 void Window::downZoomClicked(void)
 {
 	if((signed)zoomImageIndex + 3 <= 9)
 		zoomImageIndex += 3;
-	updateZoomImage();
+	sp->setIndex(zoomImageIndex);
+	updateImage();
 }
 
 void Window::leftZoomClicked(void)
 {
 	if((signed)zoomImageIndex - 1 >= 1)
 		zoomImageIndex--;
-	updateZoomImage();
+	sp->setIndex(zoomImageIndex);
+	updateImage();
 }
 
 void Window::rightZoomClicked(void)
 {
 	if((signed)zoomImageIndex + 1 <= 9)
 		zoomImageIndex++;
-	updateZoomImage();
+	sp->setIndex(zoomImageIndex);
+	updateImage();
 }
 
-void Window::updateZoomImage(void)
+void Window::updateImage(void)
 {
-	sp->setIndex(zoomImageIndex);
 	QImage result = sp->getVisualizeImage();
 	paintarea->setImage(result);
 	this->update();
@@ -247,5 +241,11 @@ void Window::fileIndexChanged(int index)
 		fileNameEdit->setText(QString(listFile[listFileIndex].c_str()));
 		loadImage();
 	}
+}
+
+void Window::setVisibleBorderLine(bool checked)
+{
+	sp->setVisibleBorderLine(checked);
+	updateImage();
 }
 

@@ -33,7 +33,7 @@ class Window : public QMainWindow
 protected:
 	void createWindow(void);
 	void connectSignal(void);
-	void updateZoomImage(void);
+	void updateImage(void);
 	QWidget *window;
 	PaintArea *paintarea;
 	QPushButton *loadButton;
@@ -46,8 +46,7 @@ protected:
 	QPushButton *upButton;
 	QPushButton *downButton;
 	QPushButton *nextImageButton;
-	QRadioButton *rawImageButton;
-	QRadioButton *superpixelImageButton;
+	QCheckBox *visibleBorderLineCheckBox;
 	QLineEdit *fileNameEdit;
 	QSpinBox *clusterNumSpin;
 	QHBoxLayout *mainLayout;
@@ -80,6 +79,7 @@ private slots:
 	void loadListFileSlot(void);
 	void nextFileSlot(void);
 	void fileIndexChanged(int);
+	void setVisibleBorderLine(bool);
 };
 
 #endif //__MAIN_WINDOW_H__

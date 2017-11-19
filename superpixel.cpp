@@ -4,6 +4,7 @@
 
 SuperPixel::SuperPixel(void)
 {
+	visible_border_line = true;
 	cluster_num = 256;
 	image_vec.resize(10);
 }
@@ -102,6 +103,8 @@ QImage SuperPixel::getVisualizeImage(void)
 			}
 		}
 	}
+	if(visible_border_line)
+		drawClusterBorder(vimg);
 	QImage tmp_img((unsigned char *)vimg.data, width, height, d.vimg.step, QImage::Format_RGB888);
 	QImage result = tmp_img.copy();
 	return result;
@@ -201,5 +204,28 @@ void SuperPixel::saveSelectLabel(void)
 			}
 		}
 	}
+}
+
+void SuperPixel::drawClusterBorder(cv::Mat &visualize_img)
+{
+	cv::Vec3b blue(0, 0, 255);
+	for(int y = 1; y < height - 1; y++) {
+		for(int x = 1; x < width - 1; x++) {
+			const int label = image_vec[current_index].label_vec[getLabelVecIndex(x, y)];
+			if(
+				image_vec[current_index].label_vec[getLabelVecIndex(x - 1, y    )] != label ||
+				image_vec[current_index].label_vec[getLabelVecIndex(x + 1, y    )] != label ||
+				image_vec[current_index].label_vec[getLabelVecIndex(x    , y - 1)] != label ||
+				image_vec[current_index].label_vec[getLabelVecIndex(x    , y + 1)] != label
+			) {
+				visualize_img.at<cv::Vec3b>(y, x) = blue;
+			}
+		}
+	}
+}
+
+void SuperPixel::setVisibleBorderLine(bool visible)
+{
+	visible_border_line = visible;
 }
 

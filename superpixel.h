@@ -7,8 +7,6 @@
 #include <string>
 #include <vector>
 
-//#include <cv.h>
-//#include <highgui.h>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -43,12 +41,15 @@ public:
 	void zoomImage(void);
 	void setClusterNum(const int);
 	void setIndex(const int);
+	void setVisibleBorderLine(bool);
+	void drawClusterBorder(cv::Mat &);
 protected:
 	cv::Mat input_img;
 	std::vector<int> selected_labels;
 	std::vector<int> image_label;
 	std::vector<struct imageData> image_vec;
 	std::string input_filename;
+	bool visible_border_line;
 	int width;
 	int height;
 	int current_index;
