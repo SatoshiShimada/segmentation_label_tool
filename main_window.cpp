@@ -210,6 +210,8 @@ void Window::loadListFileSlot(void)
 	std::ifstream listFileStream(listFileName.toStdString().c_str());
 	std::string line;
 	listFile.clear();
+	listFileIndex = 0;
+	chooseFileComboBox->setCurrentIndex(listFileIndex);
 	while(std::getline(listFileStream, line)) {
 		listFile.push_back(line);
 		chooseFileComboBox->addItem(QString::fromStdString(line));
@@ -218,7 +220,6 @@ void Window::loadListFileSlot(void)
 		fileNameEdit->setText(QString(listFile[0].c_str()));
 		loadImage();
 	}
-	listFileIndex = 0;
 }
 
 void Window::nextFileSlot(void)
