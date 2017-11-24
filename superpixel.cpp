@@ -140,7 +140,6 @@ QImage SuperPixel::getVisualizeImage(void)
 			}
 		}
 	}
-	d.vimg = vimg;
 	if(visible_border_line)
 		drawClusterBorder(vimg);
 	QImage tmp_img((unsigned char *)vimg.data, width, height, d.vimg.step, QImage::Format_RGB888);
@@ -168,8 +167,10 @@ void SuperPixel::exportLabelData(const char *filename)
 	ofs << input_filename << std::endl;
 	for(int y = 0; y < height; y++) {
 		for(int x = 0; x < width; x++) {
-			if(image_label[getLabelVecIndex(x, y)] != 0)
-				ofs << x << " " << y << std::endl;
+			const int object_type = image_label[getLabelVecIndex(x, y)];
+			if(object_type != OBJECT_BACK_GROUND) {
+				ofs << x << " " << y << " " << object_type << std::endl;
+			}
 		}
 	}
 }
