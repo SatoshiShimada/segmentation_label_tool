@@ -224,6 +224,7 @@ void Window::loadListFileSlot(void)
 
 void Window::nextFileSlot(void)
 {
+	if(listFile.empty()) return;
 	listFileIndex++;
 	if(listFileIndex >= listFile.size())
 		listFileIndex = std::max<int>(listFile.size() - 1, 0);

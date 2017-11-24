@@ -4,9 +4,12 @@
 
 SuperPixel::SuperPixel(void)
 {
+	valid_image = false;
 	visible_border_line = true;
 	cluster_num = 256;
 	image_vec.resize(10);
+	default_width = 640;
+	default_height = 480;
 }
 
 SuperPixel::~SuperPixel()
@@ -18,8 +21,21 @@ void SuperPixel::loadImage(const char *filename)
 	for(std::size_t i = 0; i < image_vec.size(); i++) {
 		image_vec[i].valid = false;
 	}
+	current_index = 0;
+	image_label.clear();
+	for(int i = 0; i < width * height; i++) {
+		image_label.push_back(0);
+	}
+	selected_labels.clear();
 	input_filename = std::string(filename);
-	input_img = cv::imread(filename);
+	try {
+		input_img = cv::imread(filename);
+		CV_Assert(input_img.type() == CV_8UC3);
+	} catch(cv::Exception &e) {
+		std::cerr << e.what() << std::endl;
+		return;
+	}
+	valid_image = true;
 	width = input_img.cols;
 	height = input_img.rows;
 	zoom_image_index_x_start = new int[9]{
@@ -34,16 +50,11 @@ void SuperPixel::loadImage(const char *filename)
 	zoom_image_index_y_end = new int[9]{
 		height / 2, height / 2, height / 2, height - height /4, height - height / 4, height - height / 4, height, height, height
 	};
-	current_index = 0;
-	image_label.clear();
-	for(int i = 0; i < width * height; i++) {
-		image_label.push_back(0);
-	}
-	selected_labels.clear();
 }
 
 void SuperPixel::process(const double threshold)
 {
+	if(!valid_image) return;
 	saveSelectLabel();
 	selected_labels.clear();
 	image_vec[0].label_vec.clear();
@@ -67,6 +78,14 @@ void SuperPixel::selectLabel(const int x, const int y)
 
 QImage SuperPixel::getVisualizeImage(void)
 {
+	if(!valid_image) {
+		QImage tmp_img(default_width, default_height, QImage::Format_RGB888);
+		QColor black;
+		black.setRgb(0, 0, 0);
+		tmp_img.fill(black);
+		QImage result = tmp_img.copy();
+		return result;
+	}
 	const int index = current_index;
 	if(!image_vec[index].valid) {
 		zoomImage();
@@ -123,6 +142,7 @@ void SuperPixel::undoSelectLabel(void)
 
 void SuperPixel::exportLabelData(const char *filename)
 {
+	if(!valid_image) return;
 	saveSelectLabel();
 	std::ofstream ofs;
 	ofs.open(filename, std::ios::out);
@@ -137,6 +157,7 @@ void SuperPixel::exportLabelData(const char *filename)
 
 void SuperPixel::zoomImage()
 {
+	if(!valid_image) return;
 	const int index = current_index;
 	if(image_vec[index].valid) {
 		if(image_vec[index].cluster_num != cluster_num) {
@@ -184,6 +205,7 @@ void SuperPixel::setIndex(const int index)
 
 void SuperPixel::saveSelectLabel(void)
 {
+	if(!valid_image) return;
 	int xstart = 0;
 	int ystart = 0;
 	int ratio = 1;

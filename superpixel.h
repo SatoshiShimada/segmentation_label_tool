@@ -12,6 +12,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 #include <QImage>
+#include <QColor>
 
 #include "slic.h"
 
@@ -50,8 +51,11 @@ protected:
 	std::vector<struct imageData> image_vec;
 	std::string input_filename;
 	bool visible_border_line;
+	bool valid_image;
 	int width;
 	int height;
+	int default_width;
+	int default_height;
 	int current_index;
 	int cluster_num;
 	int *zoom_image_index_x_start;
