@@ -1,6 +1,6 @@
 
-#ifndef __PAINT_H__
-#define __PAINT_H__
+#ifndef __IMAGE_LABEL_H__
+#define __IMAGE_LABEL_H__
 
 #include <QtGui>
 #include <QWidget>
@@ -14,7 +14,6 @@
 class PaintArea : public QLabel
 {
 	Q_OBJECT
-
 public:
 	PaintArea(int, int);
 	void setImage(QImage);
@@ -36,5 +35,5 @@ signals:
 	void mouseMoveSignal(int, int);
 };
 
-#endif //__PAINT_H__
+#endif // __IMAGE_LABEL_H__
 

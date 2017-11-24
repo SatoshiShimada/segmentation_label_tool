@@ -96,5 +96,5 @@ private slots:
 	void selectPerson(bool);
 };
 
-#endif //__MAIN_WINDOW_H__
+#endif // __MAIN_WINDOW_H__
 
