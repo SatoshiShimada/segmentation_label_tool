@@ -5,4 +5,5 @@
 moc_*
 .DS_store
 Makefile
-label_tool
+Labeling_tool
+Label_generator
