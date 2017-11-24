@@ -38,6 +38,12 @@ void Window::createWindow(void)
 	applyButton = new QPushButton("Apply");
 	exportButton = new QPushButton("Export");
 	undoButton = new QPushButton("Undo");
+	whiteLineButton = new QRadioButton("White line");
+	ballButton = new QRadioButton("Ball");
+	fieldButton = new QRadioButton("Field");
+	robotButton = new QRadioButton("Robot");
+	goalPostButton = new QRadioButton("Goal post");
+	personButton = new QRadioButton("Person");
 	fileNameEdit = new QLineEdit("image file name");
 	clusterNumSpin = new QSpinBox;
 	visibleBorderLineCheckBox = new QCheckBox("Visible border line");
@@ -49,6 +55,8 @@ void Window::createWindow(void)
 	zoomButtonLayout = new QGridLayout;
 	fileNameLayout = new QHBoxLayout;
 	clusterNumLayout = new QHBoxLayout;
+	labelButtonLayout = new QVBoxLayout;
+	labelButtonGroup = new QGroupBox;
 
 	visibleBorderLineCheckBox->setChecked(true);
 
@@ -65,6 +73,15 @@ void Window::createWindow(void)
 	clusterNumLayout->addWidget(clusterNumSpin);
 	clusterNumLayout->addWidget(applyButton);
 
+	whiteLineButton->setChecked(true);
+	labelButtonLayout->addWidget(whiteLineButton);
+	labelButtonLayout->addWidget(ballButton);
+	labelButtonLayout->addWidget(fieldButton);
+	labelButtonLayout->addWidget(robotButton);
+	labelButtonLayout->addWidget(goalPostButton);
+	labelButtonLayout->addWidget(personButton);
+	labelButtonGroup->setLayout(labelButtonLayout);
+
 	zoomButtonLayout->addWidget(leftButton, 2, 1);
 	zoomButtonLayout->addWidget(rightButton, 2, 3);
 	zoomButtonLayout->addWidget(upButton, 1, 2);
@@ -79,6 +96,7 @@ void Window::createWindow(void)
 	formLayout->addWidget(nextImageButton);
 	formLayout->addLayout(clusterNumLayout);
 	formLayout->addWidget(undoButton);
+	formLayout->addWidget(labelButtonGroup);
 	formLayout->addWidget(zoomButtonGroup);
 	formLayout->addWidget(exportButton);
 	formLayout->addWidget(visibleBorderLineCheckBox);
@@ -107,6 +125,12 @@ void Window::connectSignal(void)
 	connect(chooseFileComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(fileIndexChanged(int)));
 	connect(nextImageButton, SIGNAL(clicked()), this, SLOT(nextFileSlot()));
 	connect(visibleBorderLineCheckBox, SIGNAL(toggled(bool)), this, SLOT(setVisibleBorderLine(bool)));
+	connect(whiteLineButton, SIGNAL(clicked(bool)), this, SLOT(selectWhiteLine(bool)));
+	connect(ballButton, SIGNAL(clicked(bool)), this, SLOT(selectBall(bool)));
+	connect(fieldButton, SIGNAL(clicked(bool)), this, SLOT(selectField(bool)));
+	connect(robotButton, SIGNAL(clicked(bool)), this, SLOT(selectRobot(bool)));
+	connect(goalPostButton, SIGNAL(clicked(bool)), this, SLOT(selectGoalPost(bool)));
+	connect(personButton, SIGNAL(clicked(bool)), this, SLOT(selectPerson(bool)));
 }
 
 void Window::loadImage(void)
@@ -249,5 +273,41 @@ void Window::setVisibleBorderLine(bool checked)
 {
 	sp->setVisibleBorderLine(checked);
 	updateImage();
+}
+
+void Window::selectWhiteLine(bool checked)
+{
+	if(checked)
+		sp->setObject(1);
+}
+
+void Window::selectBall(bool checked)
+{
+	if(checked)
+		sp->setObject(2);
+}
+
+void Window::selectField(bool checked)
+{
+	if(checked)
+		sp->setObject(3);
+}
+
+void Window::selectRobot(bool checked)
+{
+	if(checked)
+		sp->setObject(4);
+}
+
+void Window::selectGoalPost(bool checked)
+{
+	if(checked)
+		sp->setObject(5);
+}
+
+void Window::selectPerson(bool checked)
+{
+	if(checked)
+		sp->setObject(6);
 }
 

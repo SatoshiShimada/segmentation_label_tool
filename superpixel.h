@@ -16,6 +16,17 @@
 
 #include "slic.h"
 
+enum {
+	OBJECT_BACK_GROUND,
+	OBJECT_WHITE_LINE,
+	OBJECT_BALL,
+	OBJECT_FIELD,
+	OBJECT_ROBOT,
+	OBJECT_GOAL_POST,
+	OBJECT_PERSON,
+	OBJECT_BORDER = 255,
+};
+
 struct imageData {
 	cv::Mat img;
 	cv::Mat vimg;
@@ -44,6 +55,7 @@ public:
 	void setIndex(const int);
 	void setVisibleBorderLine(bool);
 	void drawClusterBorder(cv::Mat &);
+	void setObject(const int);
 protected:
 	cv::Mat input_img;
 	std::vector<int> selected_labels;
@@ -52,6 +64,7 @@ protected:
 	std::string input_filename;
 	bool visible_border_line;
 	bool valid_image;
+	int current_object;
 	int width;
 	int height;
 	int default_width;
@@ -62,6 +75,7 @@ protected:
 	int *zoom_image_index_x_end;
 	int *zoom_image_index_y_start;
 	int *zoom_image_index_y_end;
+	int *color_map;
 	inline unsigned int getLabelVecIndex(const int, const int);
 	void saveSelectLabel(void);
 };

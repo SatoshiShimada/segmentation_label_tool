@@ -46,15 +46,23 @@ protected:
 	QPushButton *upButton;
 	QPushButton *downButton;
 	QPushButton *nextImageButton;
+	QRadioButton *whiteLineButton;
+	QRadioButton *ballButton;
+	QRadioButton *fieldButton;
+	QRadioButton *robotButton;
+	QRadioButton *goalPostButton;
+	QRadioButton *personButton;
 	QCheckBox *visibleBorderLineCheckBox;
 	QLineEdit *fileNameEdit;
 	QSpinBox *clusterNumSpin;
 	QHBoxLayout *mainLayout;
 	QVBoxLayout *formLayout;
 	QGroupBox *zoomButtonGroup;
+	QGroupBox *labelButtonGroup;
 	QGridLayout *zoomButtonLayout;
 	QHBoxLayout *clusterNumLayout;
 	QHBoxLayout *fileNameLayout;
+	QVBoxLayout *labelButtonLayout;
 	QComboBox *chooseFileComboBox;
 	SuperPixel *sp;
 	unsigned int zoomImageIndex;
@@ -80,6 +88,12 @@ private slots:
 	void nextFileSlot(void);
 	void fileIndexChanged(int);
 	void setVisibleBorderLine(bool);
+	void selectWhiteLine(bool);
+	void selectBall(bool);
+	void selectField(bool);
+	void selectRobot(bool);
+	void selectGoalPost(bool);
+	void selectPerson(bool);
 };
 
 #endif //__MAIN_WINDOW_H__
