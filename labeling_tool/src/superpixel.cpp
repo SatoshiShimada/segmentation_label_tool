@@ -83,7 +83,9 @@ void SuperPixel::process(const double threshold)
 void SuperPixel::selectLabel(const int x, const int y)
 {
 	const int label = image_vec[current_index].label_vec[getLabelVecIndex(x, y)];
-	selected_labels.push_back(label);
+	if(std::find(selected_labels.begin(), selected_labels.end(), label) == selected_labels.end()) {
+		selected_labels.push_back(label);
+	}
 }
 
 QImage SuperPixel::getVisualizeImage(void)
@@ -241,7 +243,11 @@ void SuperPixel::saveSelectLabel(void)
 				if(l == label) {
 					const int xx = xstart + x / ratio;
 					const int yy = ystart + y / ratio;
-					image_label[getLabelVecIndex(xx, yy)] = current_object;
+					const int index = getLabelVecIndex(xx, yy);
+					if(image_label[index] != OBJECT_BACK_GROUND) {
+						continue;
+					}
+					image_label[index] = current_object;
 				}
 			}
 		}
