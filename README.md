@@ -4,17 +4,26 @@ A generate tool of label for segmentation dataset.
 
 ## How to use
 
-First, create file of list of image.
-For example, `ls [Image Direcotry] > image_list`.  
-Second, select the pixel using `./Labeling_tool`.
+1. Create file of list of images.
+
+```shell
+ls [iamge directory] > image_list
+```
+
+2. select the pixel using `./Labeling_tool`.
+
 Generated pixel data file. `[Image name].txt`.  
-Finaly, generate label image from pixel data file.
-Using `Label_generator`. For example, `./Label_generator [label image name] < [pixel data file name]`.
+
+3.  generate label image from pixel data file using `Label_generator`.
+```
+./Label_generator [label image name] < [pixel data file name]
+```
 
 ## How to build
 Execute follow command:
 
 ```shell
+cd /path/to/segmentation_label_tool/
 cd labeling_tool/
 ./build.sh
 make
@@ -25,6 +34,6 @@ make
 cd ../
 ```
 
-## Author
-Satoshi Shimada
+## License
+MIT License (please see `LICENSE` file.)
 
